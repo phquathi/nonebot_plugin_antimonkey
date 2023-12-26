@@ -16,6 +16,10 @@
 
 ## 安装
 
+使用pip进行安装
+
+``pip install nonebot-plugin-antimonkey``
+
 
 
 ## 使用
