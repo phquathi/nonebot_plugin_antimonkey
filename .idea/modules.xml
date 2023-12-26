@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/antiMonkey.iml" filepath="$PROJECT_DIR$/.idea/antiMonkey.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/nonebot-plugin-antiMonkey.iml" filepath="$PROJECT_DIR$/.idea/nonebot-plugin-antiMonkey.iml" />
     </modules>
   </component>
 </project>
