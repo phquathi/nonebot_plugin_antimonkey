@@ -7,7 +7,7 @@ import cv2
 import aiohttp
 import numpy as np
 
-from image_recognition import check_image
+from .image_recognition import check_image
 
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
@@ -23,18 +23,6 @@ async def download_image(url: str) -> np.ndarray:
 
 
 revoke_plugin = on_message()
-
-
-@revoke_plugin.handle()
-async def handle_message(bot: Bot, event: MessageEvent):
-    msg: Message = event.message
-    for seg in msg:
-        if seg.type == 'image':
-            image_url = seg.data['url']
-            image = await download_image(image_url)
-            if check_image(image):
-                await bot.delete_msg(message_id=event.message_id)
-                return
 
 
 @revoke_plugin.handle()
