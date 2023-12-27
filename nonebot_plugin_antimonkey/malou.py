@@ -1,8 +1,6 @@
-from nonebot import on_message, logger
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
-from nonebot.adapters.onebot.v11.message import Message
-from nonebot.plugin import require
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot import on_message, logger, require
+from nonebot.rule import Rule
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment, GroupMessageEvent
 import cv2
 import aiohttp
 import numpy as np
@@ -22,19 +20,23 @@ async def download_image(url: str) -> np.ndarray:
                 return image
 
 
-revoke_plugin = on_message()
+# 只有当群聊消息中包含图像时才触发
+async def group_message_contains_image(event: MessageEvent) -> bool:
+    return isinstance(event, GroupMessageEvent) and any(seg.type == 'image' for seg in event.message)
+
+
+# 应用规则
+revoke_plugin = on_message(rule=Rule(group_message_contains_image))
 
 
 @revoke_plugin.handle()
-async def handle_message(bot: Bot, event: MessageEvent):
-    if isinstance(event, GroupMessageEvent):
-        group_id = event.group_id
-        member_info = await bot.get_group_member_info(group_id=group_id, user_id=event.self_id)  # 管理员检测，节省系统资源
-        if member_info['role'] != 'admin':
-            return
+async def handle_image_message(bot: Bot, event: GroupMessageEvent):
+    group_id = event.group_id
+    member_info = await bot.get_group_member_info(group_id=group_id, user_id=event.self_id)  # 管理员检测，节省系统资源
+    if member_info['role'] != 'admin':
+        return
 
-    msg: Message = event.message
-    for seg in msg:
+    for seg in event.message:
         if seg.type == 'image':
             try:
                 image_url = seg.data['url']
