@@ -25,14 +25,13 @@ async def group_message_contains_image(event: MessageEvent) -> bool:
     return isinstance(event, GroupMessageEvent) and any(seg.type == 'image' for seg in event.message)
 
 
-# 应用规则
 revoke_plugin = on_message(rule=Rule(group_message_contains_image))
 
 
 @revoke_plugin.handle()
 async def handle_image_message(bot: Bot, event: GroupMessageEvent):
     group_id = event.group_id
-    member_info = await bot.get_group_member_info(group_id=group_id, user_id=event.self_id)  # 管理员检测，节省系统资源
+    member_info = await bot.get_group_member_info(group_id=group_id, user_id=event.self_id)  # 管理员检测
     if member_info['role'] != 'admin':
         return
 

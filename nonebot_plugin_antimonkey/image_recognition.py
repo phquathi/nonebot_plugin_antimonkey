@@ -19,12 +19,10 @@ def check_image(image: np.ndarray) -> bool:
     # 调整图像大小为模型所需的尺寸
     image = cv2.resize(image, (224, 224))
 
-    # 将图像转换为数组并进行预处理
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
     image = preprocess_input(image)
 
-    # 使用模型进行预测
     predictions = model.predict(image)
     results = imagenet_utils.decode_predictions(predictions)
 
@@ -45,14 +43,13 @@ def check_image(image: np.ndarray) -> bool:
     }
 
     for _, label, probability in results[0]:
-        if label in monkey_labels and probability > 0.1:  # 调整阈值
+        if label in monkey_labels and probability > 0.1:  # 阈值
             print(f"({probability:.2f})")
             return True
     print(f"({probability:.2f})")
     return False
 
 # if __name__ == "__main__":
-#     # 测试图像识别功能
 #     test_image_path = 'monkey_test.jpg'
 #
 #
