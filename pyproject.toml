@@ -1,17 +1,22 @@
 [tool.poetry]
 name = "nonebot-plugin-antimonkey"
-version = "1.0.1"
+version = "1.0.3"
 description = "一个用于自动检测和撤回包含猴子图片的QQ机器人插件。"
 authors = ["phquathi <yangziqi233@gmail.com>"]
-readme = "README.md"  # 指定README文件
+readme = "README.md"
+homepage = "https://github.com/phquathi/nonebot_plugin_antimonkey"
+repository = "https://github.com/phquathi/nonebot_plugin_antimonkey"
+keywords = ["nonebot", "plugin", "antimonkey"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
 nonebot2 = "^2.0.0"
-opencv-python = "^4.0.0"
-aiohttp = "^3.0.0"
-numpy = "^1.0.0"
-tensorflow = "^2.0.0"
+nonebot-adapter-onebot = "^2.0.0"
+opencv-python = "^4.5.1.48"
+aiohttp = "^3.7.4"
+numpy = "^1.19.5"
+tensorflow = "^2.4.1"
+keras = "^2.4.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -19,3 +24,6 @@ pytest = "^5.2"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.plugins."nonebot.plugin"]
+"nonebot_plugin_antimonkey" = "nonebot_plugin_antimonkey"
