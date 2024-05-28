@@ -41,7 +41,7 @@ async def handle_image_message(bot: Bot, event: GroupMessageEvent):
                 image_url = seg.data['url']
                 image = await download_image(image_url)
                 if check_image(image):
-                    await bot.delete_msg(message_id=event.message_id)
+                    await bot.call_api('delete_msg', message_id=event.message_id)
                     await bot.send(event, "请不要发猴子图片")
                     logger.info(f"撤回了包含猴子的图片并发送警告：{image_url}")
             except Exception as e:
