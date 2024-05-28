@@ -16,6 +16,11 @@
 
 ## 安装
 
+使用nb-cli进行安装
+
+``nb plugin install nonebot-plugin-antimonkey``
+
+
 使用pip进行安装
 
 ``pip install nonebot-plugin-antimonkey``
