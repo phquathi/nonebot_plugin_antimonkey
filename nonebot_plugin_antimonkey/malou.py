@@ -1,11 +1,66 @@
-from nonebot import on_message, logger, require
-from nonebot.rule import Rule
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment, GroupMessageEvent
-import cv2
-import aiohttp
+import logging
+import tensorflow as tf
+from keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
+from keras.preprocessing.image import img_to_array
 import numpy as np
+import cv2
+from keras.src.applications import imagenet_utils
+from nonebot import on_message, require
+from nonebot.rule import Rule
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent
+import aiohttp
 
-from .image_recognition import check_image
+# 配置日志记录
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+logger.info("Loading MobileNetV2 model...")
+# MobileNetV2模型
+model = MobileNetV2(weights="imagenet")
+
+
+def check_image(image: np.ndarray) -> bool:
+    """
+    检查图像中是否有猴子。
+    :param image: OpenCV图像数组。
+    :return: 如果图像中有猴子，返回True；否则返回False。
+    """
+    logger.debug("Resizing image...")
+    image = cv2.resize(image, (224, 224))
+
+    logger.debug("Converting image to array...")
+    image = img_to_array(image)
+    image = np.expand_dims(image, axis=0)
+    image = preprocess_input(image)
+
+    logger.debug("Predicting image...")
+    predictions = model.predict(image)
+    results = imagenet_utils.decode_predictions(predictions)
+
+    monkey_labels = {
+        "guenon", "guenon monkey",
+        "patas", "hussar monkey", "Erythrocebus patas",
+        "baboon",
+        "macaque",
+        "langur",
+        "colobus", "colobus monkey",
+        "proboscis monkey", "Nasalis larvatus",
+        "marmoset",
+        "capuchin", "ringtail", "Cebus capucinus",
+        "howler monkey", "howler",
+        "titi", "titi monkey",
+        "spider monkey", "Ateles geoffroyi",
+        "squirrel monkey", "Saimiri sciureus"
+    }
+
+    logger.debug("Checking predictions...")
+    for _, label, probability in results[0]:
+        if label in monkey_labels and probability > 0.1:  # 阈值
+            logger.info(f"Detected monkey with probability {probability:.2f}")
+            return True
+    logger.info(f"No monkey detected, highest probability: {probability:.2f}")
+    return False
+
 
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
