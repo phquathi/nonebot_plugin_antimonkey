@@ -10,7 +10,6 @@ from nonebot.rule import Rule
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent
 import aiohttp
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # MobileNetV2模型
