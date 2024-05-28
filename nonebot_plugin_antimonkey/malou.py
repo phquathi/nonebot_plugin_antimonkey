@@ -10,11 +10,9 @@ from nonebot.rule import Rule
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent
 import aiohttp
 
-# 配置日志记录
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-logger.info("Loading MobileNetV2 model...")
 # MobileNetV2模型
 model = MobileNetV2(weights="imagenet")
 
@@ -25,15 +23,12 @@ def check_image(image: np.ndarray) -> bool:
     :param image: OpenCV图像数组。
     :return: 如果图像中有猴子，返回True；否则返回False。
     """
-    logger.debug("Resizing image...")
     image = cv2.resize(image, (224, 224))
 
-    logger.debug("Converting image to array...")
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
     image = preprocess_input(image)
 
-    logger.debug("Predicting image...")
     predictions = model.predict(image)
     results = imagenet_utils.decode_predictions(predictions)
 
@@ -53,12 +48,9 @@ def check_image(image: np.ndarray) -> bool:
         "squirrel monkey", "Saimiri sciureus"
     }
 
-    logger.debug("Checking predictions...")
     for _, label, probability in results[0]:
         if label in monkey_labels and probability > 0.1:  # 阈值
-            logger.info(f"Detected monkey with probability {probability:.2f}")
             return True
-    logger.info(f"No monkey detected, highest probability: {probability:.2f}")
     return False
 
 
@@ -77,9 +69,7 @@ async def download_image(url: str) -> np.ndarray:
 
 async def group_message_contains_image(event: MessageEvent) -> bool:
     if isinstance(event, GroupMessageEvent) and any(seg.type == 'image' for seg in event.message):
-        logger.debug("Message contains image.")
         return True
-    logger.debug("Message does not contain image.")
     return False
 
 
@@ -89,18 +79,14 @@ revoke_plugin = on_message(rule=Rule(group_message_contains_image))
 @revoke_plugin.handle()
 async def handle_image_message(bot: Bot, event: GroupMessageEvent):
     group_id = event.group_id
-    logger.debug(f"Received image message in group {group_id}")
     member_info = await bot.get_group_member_info(group_id=group_id, user_id=event.self_id)  # 管理员检测
-    logger.debug(f"Bot role in group: {member_info['role']}")
     if member_info['role'] != 'admin':
-        logger.debug("Bot is not admin. Exiting.")
         return
 
     for seg in event.message:
         if seg.type == 'image':
             try:
                 image_url = seg.data['url']
-                logger.debug(f"Downloading image from {image_url}")
                 image = await download_image(image_url)
                 if check_image(image):
                     await bot.call_api('delete_msg', message_id=event.message_id)
