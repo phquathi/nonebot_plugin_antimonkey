@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-antimonkey"
-version = "1.1.0"
+version = "1.1.1"
 description = "一个用于自动检测和撤回包含猴子图片的QQ机器人插件。"
 authors = ["phquathi <yangziqi233@gmail.com>"]
 readme = "README.md"
@@ -17,6 +17,7 @@ aiohttp = "^3.7.4"
 numpy = "^1.19.5"
 tensorflow = "^2.4.1"
 keras = "^2.4.3"
+nonebot-plugin-apscheduler = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
