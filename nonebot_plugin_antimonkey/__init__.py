@@ -1,12 +1,7 @@
-from nonebot import get_driver
 from nonebot.plugin import PluginMetadata
-
-from .config import Config
 
 from .malou import *
 
-global_config = get_driver().config
-config = Config.parse_obj(global_config)
 
 __plugin_meta__ = PluginMetadata(
     name="AntiMonkey",
