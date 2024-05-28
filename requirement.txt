@@ -1,7 +1,0 @@
-nonebot2
-nonebot-adapter-onebot
-opencv-python
-aiohttp
-tensorflow
-keras
-numpy
