@@ -20,9 +20,12 @@ async def download_image(url: str) -> np.ndarray:
                 return image
 
 
-# 只有当群聊消息中包含图像时才触发
 async def group_message_contains_image(event: MessageEvent) -> bool:
-    return isinstance(event, GroupMessageEvent) and any(seg.type == 'image' for seg in event.message)
+    if isinstance(event, GroupMessageEvent) and any(seg.type == 'image' for seg in event.message):
+        logger.debug("Message contains image.")
+        return True
+    logger.debug("Message does not contain image.")
+    return False
 
 
 revoke_plugin = on_message(rule=Rule(group_message_contains_image))
@@ -31,18 +34,24 @@ revoke_plugin = on_message(rule=Rule(group_message_contains_image))
 @revoke_plugin.handle()
 async def handle_image_message(bot: Bot, event: GroupMessageEvent):
     group_id = event.group_id
+    logger.debug(f"Received image message in group {group_id}")
     member_info = await bot.get_group_member_info(group_id=group_id, user_id=event.self_id)  # 管理员检测
+    logger.debug(f"Bot role in group: {member_info['role']}")
     if member_info['role'] != 'admin':
+        logger.debug("Bot is not admin. Exiting.")
         return
 
     for seg in event.message:
         if seg.type == 'image':
             try:
                 image_url = seg.data['url']
+                logger.debug(f"Downloading image from {image_url}")
                 image = await download_image(image_url)
                 if check_image(image):
                     await bot.call_api('delete_msg', message_id=event.message_id)
                     await bot.send(event, "请不要发猴子图片")
                     logger.info(f"撤回了包含猴子的图片并发送警告：{image_url}")
+                else:
+                    logger.debug("Image does not contain monkey.")
             except Exception as e:
                 logger.error(f"处理图片时出错：{e}")

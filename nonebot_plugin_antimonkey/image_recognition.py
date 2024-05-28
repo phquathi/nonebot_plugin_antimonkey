@@ -16,7 +16,6 @@ def check_image(image: np.ndarray) -> bool:
     :param image: OpenCV图像数组。
     :return: 如果图像中有猴子，返回True；否则返回False。
     """
-    # 调整图像大小为模型所需的尺寸
     image = cv2.resize(image, (224, 224))
 
     image = img_to_array(image)
